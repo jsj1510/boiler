@@ -5,7 +5,7 @@ const cookieParser  = require('cookie-parser');
 const bodyParser = require('body-parser');
 const { User } = require('./models/User');
 const config = require('./config/key');
-const port = 4000;
+const port = 5000;
 
 
 // application/x-www-form-urlencoded
