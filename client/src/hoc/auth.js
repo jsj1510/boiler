@@ -14,9 +14,7 @@ export default function (SpecificComponent, option, adminRoute = null) {
         
         useEffect(() => {
             
-            dispatch(auth()).then(response => {
-                console.log(response)
-
+            dispatch(auth()).then((response) => {
                 //로그인 하지 않은 상태
                 if(!response.payload.isAuth) {
                     if(option) {
@@ -27,8 +25,8 @@ export default function (SpecificComponent, option, adminRoute = null) {
                     if(adminRoute && !response.payload.isAdmin) {
                         // 어드민페이지 && 어드민 권한 X일때
                         props.history.push('/')
-                    }else {
-                        if(option === false) {
+                    } else {
+                        if(!option) {
                             props.history.push('/')
                         }
                     }
@@ -36,7 +34,7 @@ export default function (SpecificComponent, option, adminRoute = null) {
 
             });
 
-        }, [])
+        }, []);
 
         return (
             <SpecificComponent />
@@ -44,5 +42,5 @@ export default function (SpecificComponent, option, adminRoute = null) {
 
     }
 
-    return AuthenticationCheck
+    return AuthenticationCheck;
 }

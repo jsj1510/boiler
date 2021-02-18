@@ -8,8 +8,7 @@ import Auth from './hoc/auth';
 function App() {
   return (
     <Router>
-      <div>
-        
+      <div>   
         {/*
           A <Switch> looks through all its children <Route>
           elements and renders the first one whose path
@@ -18,7 +17,7 @@ function App() {
           of them to render at a time
         */}
         <Switch>
-          <Route exact path="/" component={Auth(LandingPage, null)} />
+          <Route exact path="/" component={Auth(LandingPage, true)} />
           <Route exact path="/login" component={Auth(LoginPage, false)} />
           <Route exact path="/register" component={Auth(RegisterPage, false)} />
         </Switch>
@@ -28,4 +27,4 @@ function App() {
 }
 
 
-export default App
+export default App;
