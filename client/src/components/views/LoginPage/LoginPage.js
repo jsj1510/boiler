@@ -27,7 +27,8 @@ function LoginPage(props) {
         dispatch(loginUser(body))
             .then((response) => {
                 if(response.payload.loginSuccess) {
-                    props.history.push("/")
+                  window.localStorage.setItem('userID', response.payload.userID);
+                  props.history.push("/")
                 } else {
                     alert('Error')
                 }

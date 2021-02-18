@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { auth } from '../_actions/user_action';
+import { withRouter } from 'react-router-dom';
 
 export default function (SpecificComponent, option, adminRoute = null) {
 
@@ -42,5 +43,5 @@ export default function (SpecificComponent, option, adminRoute = null) {
 
     }
 
-    return AuthenticationCheck;
+    return withRouter(AuthenticationCheck);
 }
