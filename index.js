@@ -6,7 +6,8 @@ const bodyParser = require('body-parser');
 const { User } = require('./models/User');
 const config = require('./config/key');
 const port = 5000;
-
+// video파일저장
+const multer = require('multer');
 
 // application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: true}));
@@ -14,6 +15,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 // application/json
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use('/uploads', express.static('uploads'));
 
 const mongoose = require('mongoose');
 mongoose.connect(config.mongoURI, {
@@ -25,7 +27,27 @@ mongoose.connect(config.mongoURI, {
 .then( ()=> console.log('MongDB Connected...'))
 .catch( err => console.log(err));
 
+//동영상 파일을 저장하기 위한 multer 옵션!
+let storage = multer.diskStorage({
+  //파일을 올리면 uploads 폴더에 저장됨
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/videos');
+  },
+  //파일을 이름 저장
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}_${file.originalname}`);
+  },
+  //파일 종류 제한
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    if (ext !== '.mp4') {
+      return cb(res.status(400).end('only mp4 is allowed'), false);
+    }
+    cb(null, true);
+  }
+});
 
+const upload = multer({ storage: storage }).single('file');
 
 app.get('/', (req, res) => {
     res.send("안녕하세요~~!!새해복많이")
@@ -109,3 +131,19 @@ app.get('/api/users/logout', auth , (req,res) => {
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 }) 
+
+
+//video
+app.post('/api/video/uploadfiles',(req, res) => {
+  upload(req, res, err => {
+    if(err) return res.json({ success: false, err});
+    //url은 uploads 폴더에 저장된 경로를 client에 보내줌
+    return res.json({ 
+      success: true, 
+      url: res.req.file.path, 
+      fileName: res.req.file.filename
+    });
+  });
+});
+
+
