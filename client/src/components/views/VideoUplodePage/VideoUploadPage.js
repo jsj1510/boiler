@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Button, Form, message, Input, Icon} from 'antd';
+import { Typography, Button, Form, message, Input} from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
 import axios from 'axios';
@@ -25,6 +25,9 @@ function UploadVideoPage() {
     const [Description, setDescription] = useState("");
     const [Private, setPrivate] = useState(0)
     const [Categories, setCategories] = useState("Film & Animation")
+    const [FilePath, setFilePath] = useState("")
+    const [Duration, setDuration] = useState("")
+    const [Thumbnail, setThumbnail] = useState("")
 
     const onTitleChage = (event) => {
         setVideoTitle(event.currentTarget.value)
@@ -43,25 +46,37 @@ function UploadVideoPage() {
     }
 
     const onDrop = (files) => {
+        console.log(files);
         let formData = new FormData();
         const config = {
-            header: { 'content-type': 'multipart/form-data' }
+          header: { "content-type": "multipart/form-data" },
         };
         formData.append("file", files[0]);
-        console.log(files)
+    
+        axios.post("/api/video/uploadfiles", formData, config).then((response) => {
+          if (response.data.success) {
+            console.log(response.data);
+    
+            let variable = {
+              url: response.data.url,
+              fileName: response.data.filename,
+            };
+            setFilePath(response.data.url)
+    
+            axios.post("/api/video/thumbnail", variable).then((response) => {
+              if (response.data.success) {
+                setDuration(response.data.fileDuration)
+                setThumbnail(response.data.thumbsFilePath)
+              } else {
+                alert("썸네일 에러 발생");
+              }
+            });
+          } else {
+            alert("upload failed");
+          }
+        });
+      };
 
-       
-        //여기서 formData, config 즉 file을 서버의 request로 보냄
-        axios.post('/api/video/uploadfiles', formData, config) 
-            .then(response => {
-                if(response.data.success) {
-                    console.log(response.data);
-                
-                } else {
-                    alert('비디오 업로드를 실패했습니다.');
-                }
-            })
-    }
     return (
         <div style={{ maxWidth: '700px', margin: '2rem auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
@@ -70,28 +85,28 @@ function UploadVideoPage() {
 
 
             <Form onSubmit>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        {/* 드롭존 */}
-                        <Dropzone
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Dropzone
                         onDrop={onDrop}
                         multiple={false}
-                        maxSize={1000000000}>
+                        maxSize={800000000}>
                         {({ getRootProps, getInputProps }) => (
                             <div style={{ width: '300px', height: '240px', border: '1px solid lightgray', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 {...getRootProps()}
                             >
                                 <input {...getInputProps()} />
-                                <PlusOutlined type='plus' style={{fontSize: '3rem'}}></PlusOutlined>
+                                <PlusOutlined type="plus" style={{ fontSize: '3rem' }} />
+
                             </div>
                         )}
-                        </Dropzone>
+                    </Dropzone>
 
-                        {/* 썸네일 */}
+                    {Thumbnail &&
                         <div>
-                            <img src alt />
+                            <img src={`http://localhost:5000/${Thumbnail}`} alt="haha" />
                         </div>
+                    }
                 </div>
-            
             <br />
             <br />
             <label>Title</label>

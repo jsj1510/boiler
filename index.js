@@ -8,6 +8,8 @@ const config = require('./config/key');
 const port = 5000;
 // video파일저장
 const multer = require('multer');
+// 썸네일
+const ffmpeg = require('fluent-ffmpeg');
 
 // application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: true}));
@@ -15,6 +17,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 // application/json
 app.use(bodyParser.json());
 app.use(cookieParser());
+// 서버에있는 static한파일처리
 app.use('/uploads', express.static('uploads'));
 
 const mongoose = require('mongoose');
@@ -144,6 +147,47 @@ app.post('/api/video/uploadfiles',(req, res) => {
       fileName: res.req.file.filename
     });
   });
+});
+
+app.post('/api/video/thumbnail', (req, res) => {
+
+  let thumbsFilePath = "";
+  let fileDuration = "";
+
+   // 비디오 전체 정보 추출
+  ffmpeg.ffprobe(req.body.url, function (err, metadata) {
+    console.dir(metadata);
+    console.log(metadata.format.duration);
+
+    fileDuration = metadata.format.duration;
+  });
+
+  //썸네일 생성, 비디오 길이 추출
+  ffmpeg(req.body.url)
+    .on("filenames", function (filenames) {
+      console.log("Will generate " + filenames.join(", "));
+      thumbsFilePath = "uploads/thumbnails/" + filenames[0];
+    })
+    .on("end", function () {
+      console.log("Screenshots taken");
+      return res.json({
+        success: true,
+        thumbsFilePath: thumbsFilePath,
+        fileDuration: fileDuration,
+      });
+    })
+    .on("error", function (err) {
+      console.error(err);
+      return res.json({ success: false, err });
+    })
+    .screenshots({
+      // Will take screens at 20%, 40%, 60% and 80% of the video
+      count: 1,
+      folder: "uploads/thumbnails",
+      size: "320x200",
+      // 기본이름 입력
+      filename: "thumbnail-%b.png",
+    });
 });
 
 
