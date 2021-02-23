@@ -192,7 +192,7 @@ app.post('/api/video/thumbnail', (req, res) => {
 });
 
 app.post('/api/video/uploadVideo', (req, res) => {
-  //비디오 정보 저장
+  //영상 저장
   const video = new Video(req.body)
   video.save((err, doc) => {
     if(err) return res.json({ success: false, err });
@@ -201,3 +201,18 @@ app.post('/api/video/uploadVideo', (req, res) => {
 });
 
 
+app.get('/api/video/getVideos', (req, res) => {
+  //DB에서 영상가져와 클라에보낸다
+  Video.find().populate('writer').exec((err, videos) => {
+    if (err) return res.status(400).send(err);
+    return res.status(200).json({ success: true, videos})
+  })
+});
+
+// app.post('/api/video/getVideoDetail', (req, res) => {
+//   Video.findOne({'_id': req.body.videoId})
+//     .populate('writer').exec((err, videoDetail) => {
+//       if (err) return res.status(400).send(err);
+//       return res.status(200).json({ success: true, videoDetail })
+//     })
+// });
