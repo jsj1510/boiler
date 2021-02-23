@@ -4,6 +4,7 @@ const { auth } = require('./middleware/auth')
 const cookieParser  = require('cookie-parser');
 const bodyParser = require('body-parser');
 const { User } = require('./models/User');
+const { Video } = require("./models/Video"); 
 const config = require('./config/key');
 const port = 5000;
 // video파일저장
@@ -188,6 +189,15 @@ app.post('/api/video/thumbnail', (req, res) => {
       // 기본이름 입력
       filename: "thumbnail-%b.png",
     });
+});
+
+app.post('/api/video/uploadVideo', (req, res) => {
+  //비디오 정보 저장
+  const video = new Video(req.body)
+  video.save((err, doc) => {
+    if(err) return res.json({ success: false, err });
+    else return res.status(200).json({ success: true });
+  });
 });
 
 

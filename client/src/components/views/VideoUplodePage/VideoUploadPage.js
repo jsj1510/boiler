@@ -3,6 +3,8 @@ import { Typography, Button, Form, message, Input} from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
 import axios from 'axios';
+import { useSelector } from "react-redux";
+import { withRouter } from 'react-router-dom';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -20,10 +22,11 @@ const Catogory = [
     { value: 4, label: "Sports" },
 ]
 
-function UploadVideoPage() {
+function UploadVideoPage(props) {
+    const user = useSelector(state => state.user);
     const [VideoTitle, setVideoTitle] = useState("");
     const [Description, setDescription] = useState("");
-    const [Private, setPrivate] = useState(0)
+    const [privacy, setPrivacy] = useState(0)
     const [Categories, setCategories] = useState("Film & Animation")
     const [FilePath, setFilePath] = useState("")
     const [Duration, setDuration] = useState("")
@@ -38,7 +41,7 @@ function UploadVideoPage() {
     }
 
     const handleChangeOne = (event) => {
-        setPrivate(event.currentTarget.value)
+        setPrivacy(event.currentTarget.value)
     }
 
     const handleChangeTwo = (event) => {
@@ -77,6 +80,34 @@ function UploadVideoPage() {
         });
       };
 
+    const onSumit = (e) => {
+        e.preventDefault();
+    
+        
+        const variables = {
+            writer: user.userData._id,
+            title: VideoTitle,
+            description: Description,
+            privacy: privacy,
+            filePath: FilePath,
+            category: Categories,
+            duration: Duration,
+            thumbnail: Thumbnail
+        }
+
+        axios.post('/api/video/uploadVideo', variables)
+        .then(response => {
+            if (response.data.success) {
+                message.success('성공적으로 업로드를 하였습니다.');
+                setTimeout(() => {
+                    props.history.push('/');
+                }, 1000)
+            } else {
+                alert('파일업로드실패')
+            }
+        })
+    }
+
     return (
         <div style={{ maxWidth: '700px', margin: '2rem auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
@@ -84,7 +115,7 @@ function UploadVideoPage() {
             </div>
 
 
-            <Form onSubmit>
+            <Form onSubmit={onSumit}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Dropzone
                         onDrop={onDrop}
@@ -141,11 +172,11 @@ function UploadVideoPage() {
             </select>
             <br />
             <br />
-            <Button type="primary" size="large" onClick>
+            <Button type="primary" size="large" onClick={onSumit}>
                     Submit
             </Button>
         </div>
     )
 }
 
-export default UploadVideoPage
+export default withRouter(UploadVideoPage);
