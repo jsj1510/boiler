@@ -3,6 +3,7 @@ import { List, Avatar, Row, Col } from 'antd';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import SideVideo from './Sections/SideVideo';
+import Subscribe from './Sections/Subscribe'
 
 function VideoDetailPage(props) {
     
@@ -34,7 +35,7 @@ function VideoDetailPage(props) {
                             <video style={{ width: '100%' }} src={`http://localhost:5000/${videoDetail.filePath}`} controls></video>
     
                             <List.Item
-                                actions
+                                actions={[<Subscribe userTo={videoDetail.writer._id} />]}
                                 >
                                 
                                 <List.Item.Meta
