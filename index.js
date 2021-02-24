@@ -5,6 +5,7 @@ const cookieParser  = require('cookie-parser');
 const bodyParser = require('body-parser');
 const { User } = require('./models/User');
 const { Video } = require("./models/Video"); 
+const { Subscriber } = require("./models/Subscriber");
 const config = require('./config/key');
 const port = 5000;
 // video파일저장
@@ -238,3 +239,21 @@ app.post('/api/subscribe/subscribed', (req, res) => {
     return res.status(200).json({ success: true, subscribed: result })
   })
 });
+
+app.post('/api/subscribe/unSubscribe', (req, res) => {
+  Subscriber.findOneAndDelete({ 'userTo': req.body.userTo, 'userFrom': req.body.userFrom })
+  .exec((err, doc) => {
+    if (err) return res.json({ success: false, err});
+    return res.status(200).json({ success: true, doc });
+  })
+});
+
+app.post('/api/subscribe/subscribe', (req, res) => {
+  const subscribe = new Subscriber(req.body);
+
+  subscribe.save((err, doc) => {
+    if (err) return res.json({ success: false, err});
+    return res.status(200).json({ success: true });
+  })
+});
+

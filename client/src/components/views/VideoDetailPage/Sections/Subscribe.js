@@ -34,12 +34,45 @@ function Subscribe(props) {
                 }
             })
 
-    }, [])
+    }, []);
+
+    const onSubscribe = () => {
+
+        let subscribedVariable = {
+            userTo: props.userTo,
+            userFrom: props.userFrom,
+        }
+        //구독중
+        if (subscribed) {
+            axios.post('/api/subscribe/unSubscribe', subscribedVariable)
+                .then(response => {
+                    if (response.data.success) {
+                        setSubscribeNumber(SubscribeNumber - 1);
+                        setSubscribed(!subscribed);
+                    } else {
+                        alert('구독 취소 하는데 실패하였습니다.')
+                    }
+                })
+
+        //구독중이 아니라면
+        } else {
+            axios.post('/api/subscribe/subscribe', subscribedVariable)
+                .then(response => {
+                    if (response.data.success) {
+                        setSubscribeNumber(SubscribeNumber + 1);
+                        setSubscribed(!subscribed);
+                    } else {
+                        alert('구독 하는데 실패하였습니다.')
+                    }
+                })
+        }
+    }
+
 
     return (
         <div>
             <button 
-            onClick
+            onClick={onSubscribe}
             style={{
                 backgroundColor: `${subscribed ? '#AAAAAA' : '#CC0000'}`,
                 borderRadius: '4px', color: 'white',
