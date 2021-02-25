@@ -3,7 +3,7 @@ import { List, Avatar, Row, Col } from 'antd';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import SideVideo from './Sections/SideVideo';
-import Subscribe from './Sections/Subscribe'
+import Subscriber from './Sections/Subscribe'
 
 function VideoDetailPage(props) {
     
@@ -27,11 +27,11 @@ function VideoDetailPage(props) {
 
     // 비디오.writer가 있으면 lmage
     if(videoDetail.writer) {
-        const subscribedButton = videoDetail.writer._id !== localStorage.getItem('userID') 
-            && <Subscribe 
-                    userTo= {videoDetail.writer._id} 
-                    userFrom={localStorage.getItem('userID')}
-                />
+        // const subscribedButton = videoDetail.writer._id !== localStorage.getItem('userID') 
+        //     && <Subscribe 
+        //             userTo= {videoDetail.writer._id} 
+        //             userFrom={localStorage.getItem('userID')}
+        //         />
         return (
             <Row gutter={[16, 16]}>
                     <Col lg={18} xs={24}>
@@ -39,8 +39,8 @@ function VideoDetailPage(props) {
                             <video style={{ width: '100%' }} src={`http://localhost:5000/${videoDetail.filePath}`} controls></video>
     
                             <List.Item
-                                actions={[subscribedButton]}>
-                                    
+                                actions={[<Subscriber userTo={videoDetail.writer._id} userFrom={localStorage.getItem('userId')} />]} >
+
                                 <List.Item.Meta
                                     avatar={<Avatar src={videoDetail.writer.image}/>}
                                     title={videoDetail.writer.name}

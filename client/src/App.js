@@ -6,7 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import VideoUploadPage from './components/views/VideoUplodePage/VideoUploadPage';
 import VideoDetailPage from './components/views/VideoDetailPage/VideoDetailPage';
-// import SubscriptionPage from './components/views/SubscriptionPage/SubscriptionPage';
+import SubscriptionPage from './components/views/SubscriptionPage/SubscriptionPage';
 
 function App() {
   return (
@@ -25,7 +25,7 @@ function App() {
           <Route exact path="/register" component={Auth(Register, false)} />
           <Route exact path="/video/upload" component={Auth(VideoUploadPage, true)} />
           <Route exact path="/video/:videoId" component={Auth(VideoDetailPage, true)} />
-          {/* <Route path="/subscription" component={Auth(SubscriptionPage, true)} /> */}
+          <Route path="/subscription" component={Auth(SubscriptionPage, true)} />
         </Switch>
       </div>
     </Router>
