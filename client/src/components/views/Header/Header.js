@@ -48,14 +48,26 @@ const Header = (props) => {
     };
 
     return (
+        // 헤더 버튼 만드는부분
         <header>
-            <h1 className="header-title"><Link to="/">Home</Link></h1>
-            <ul className="header-menu">
-                {login ? <li><Link to="/" onClick={ onClickHandler }>Logout</Link></li>
-                : <li><Link to="/login">Login</Link></li>}
-                {login ? '' : <li><Link to="/register">Signup</Link></li>
+            {login ? (
+                    <>
+                        <h1 className="header-title"><Link to="/">HOME</Link></h1>
+                        <ul className="header-menu">
+                            <li><Link to="/video/upload">VideoUpload</Link></li> 
+                            <li><Link to="/subscription">Subscription</Link></li> 
+                            <li><Link to="/" onClick={onClickHandler}>Logout</Link></li>
+                        </ul>
+                    </>
+                    ) :
+                    <>
+                        <h1 className="header-title"><Link to="/">HOME</Link></h1>
+                        <ul className="header-menu">
+                            <li><Link to="/login">Login</Link></li>
+                            <li><Link to="/register">Signup</Link></li>
+                        </ul>
+                    </>
                 }
-            </ul>
         </header>
     )
 };

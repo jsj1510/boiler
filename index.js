@@ -8,10 +8,8 @@ const { Video } = require("./models/Video");
 const { Subscriber } = require("./models/Subscriber");
 const config = require('./config/key');
 const port = 5000;
-// video파일저장
-const multer = require('multer');
-// 썸네일
-const ffmpeg = require('fluent-ffmpeg');
+const multer = require('multer');// video파일저장
+const ffmpeg = require('fluent-ffmpeg');// 썸네일 생성
 
 // application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: true}));
@@ -218,6 +216,29 @@ app.post('/api/video/getVideoDetail', (req, res) => {
     })
 });
 
+// 비디오페이지분류 이유 : 비디오페이지에서 구독정보 가져온다
+app.post('/api/video/getSubscriptionVideos', (req, res) => {
+  //자신의 아이디를 가지고 구독하는 사람들을 찾는다.
+  Subscriber.find({ 'userFrom' : req.body.userFrom })
+    .exec((err, subscriberInfo) => {
+      if (err) return res.status(400).send(err);
+
+      let subscribedUser = [];
+
+      subscriberInfo.map((subscriber, i) => {
+        subscribedUser.push(subscriber.userTo);
+      })
+
+  //찾은 사람들의 비디오를 가지고온다.
+      Video.find({ writer: { $in: subscribedUser }})
+        .populate('writer')
+        .exec((err, videos) => {
+          if (err) return res.status(400).send(err);
+          return res.status(200).json({ success: true, videos})
+        })
+    })
+});
+
 //subscribe
 app.post('/api/subscribe/subscribeNumber', (req, res) => {
   Subscriber.find({ 'userTo': req.body.userTo })
@@ -240,20 +261,20 @@ app.post('/api/subscribe/subscribed', (req, res) => {
   })
 });
 
-app.post('/api/subscribe/unSubscribe', (req, res) => {
-  Subscriber.findOneAndDelete({ 'userTo': req.body.userTo, 'userFrom': req.body.userFrom })
-  .exec((err, doc) => {
-    if (err) return res.json({ success: false, err});
-    return res.status(200).json({ success: true, doc });
-  })
-});
+// app.post('/api/subscribe/subscribe', (req, res) => {
+//   const subscribe = new Subscriber(req.body);
 
-app.post('/api/subscribe/subscribe', (req, res) => {
-  const subscribe = new Subscriber(req.body);
+//   subscribe.save((err, doc) => {
+//     if (err) return res.json({ success: false, err});
+//     return res.status(200).json({ success: true });
+//   })
+// });
 
-  subscribe.save((err, doc) => {
-    if (err) return res.json({ success: false, err});
-    return res.status(200).json({ success: true });
-  })
-});
+// app.post('/api/subscribe/unSubscribe', (req, res) => {
+//   Subscriber.findOneAndDelete({ 'userTo': req.body.userTo, 'userFrom': req.body.userFrom })
+//   .exec((err, doc) => {
+//     if (err) return res.json({ success: false, err});
+//     return res.status(200).json({ success: true, doc });
+//   })
+// });
 

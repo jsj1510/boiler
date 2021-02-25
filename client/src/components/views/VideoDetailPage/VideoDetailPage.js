@@ -7,11 +7,11 @@ import Subscribe from './Sections/Subscribe'
 
 function VideoDetailPage(props) {
     
-    const videoId = props.match.params.videoId; //비디오 url 가져오기
-    const [videoDetail, setVideoDetail] = useState([]);
+    const videoId = props.match.params.videoId;
     const variable = {
         videoId : videoId,
     };
+    const [videoDetail, setVideoDetail] = useState([]);
 
     useEffect(() => {
         axios.post('/api/video/getVideoDetail', variable)
@@ -23,11 +23,15 @@ function VideoDetailPage(props) {
                 }
             });
 
-
     }, [])
 
     // 비디오.writer가 있으면 lmage
     if(videoDetail.writer) {
+        const subscribedButton = videoDetail.writer._id !== localStorage.getItem('userID') 
+            && <Subscribe 
+                    userTo= {videoDetail.writer._id} 
+                    userFrom={localStorage.getItem('userID')}
+                />
         return (
             <Row gutter={[16, 16]}>
                     <Col lg={18} xs={24}>
@@ -35,9 +39,8 @@ function VideoDetailPage(props) {
                             <video style={{ width: '100%' }} src={`http://localhost:5000/${videoDetail.filePath}`} controls></video>
     
                             <List.Item
-                                actions={[<Subscribe userTo={videoDetail.writer._id} userForm={localStorage.getItem('userId')} />]}
-                                >
-                                
+                                actions={[subscribedButton]}>
+                                    
                                 <List.Item.Meta
                                     avatar={<Avatar src={videoDetail.writer.image}/>}
                                     title={videoDetail.writer.name}
