@@ -3,77 +3,71 @@ import React, { useEffect, useState } from 'react';
 
 const Subscribe = (props) => {
 
-    const [SubscribeNumber, setSubscribeNumber] = useState(0)
-    const [Subscribed, setSubscribed] = useState(false)
+    const [subscribeNumber, setSubscribeNumber] = useState(0);
+    const [subscribed, setSubscribed] = useState(false);
 
-    let variable = {
-        userTo: props.userTo
-    }
+
 
     useEffect(() => {
-        
-        axios.post('/api/subscribe/subscribeNumber', variable)
-            .then(response => {
-                if (response.data.success) {
-                    setSubscribeNumber(response.data.subscribeNumber)
-                } else {
-                    alert('Failed to get subscriber Number')
-                }
-            })
 
-        const subscribeNumberVariables = { userTo: props.userTo, userFrom: localStorage.getItem('userId')}
-        axios.post('/api/subscribe/subscribed', subscribeNumberVariables)
-        .then(response => {
-            if (response.data.success) {
-                setSubscribed(response.data.Subcribed)
-            } else {
-                alert('Failed to get Subscribed Information')
-            }
-        })
+        let variable = { userTo: props.userTo}
 
-    }, [])    
+       axios.post('/api/subscribe/subscribeNumber', variable)
+       .then(response => {
+           if(response.data.success) {
+                setSubscribeNumber(response.data.subscribeNumber)
+           } else {
+               alert('구독자 수 정보를 받아오지 못했습니다.')
+           }
+       })
 
-    const onSubscribe = ( ) => {
+       let subscribedVariable = { userTo: props.userTo, userFrom: localStorage.getItem('userId') }
 
-        let subscribeVariables = {
-                userTo : props.userTo,
-                userFrom : props.userFrom
-        }
-
-        if(Subscribed) {
-            //when we are already subscribed 
-            axios.post('/api/subscribe/unSubscribe', subscribeVariables)
-                .then(response => {
-                    if(response.data.success){ 
-                        setSubscribeNumber(SubscribeNumber - 1)
-                        setSubscribed(!Subscribed)
-                    } else {
-                        alert('Failed to unsubscribe')
-                    }
-                })
-
+       axios.post('/api/subscribe/subscribed', subscribedVariable)
+       .then(response => {
+        if(response.data.success) {
+            setSubscribed(response.data.subscribed)
         } else {
-            // when we are not subscribed yet
-            
-            axios.post('/api/subscribe/subscribe', subscribeVariables)
+            alert('정보를 받아오지 못했습니다.')
+        }
+    })
+    }, [])
+
+    const onSubscribe = () => {
+
+        let subscribedVariable = {
+            userTo: props.userTo,
+            userFrom: props.userFrom,
+        }
+
+        if (subscribed) {
+            axios.post('/api/subscribe/unSubscribe', subscribedVariable)
                 .then(response => {
-                    if(response.data.success) {
-                        setSubscribeNumber(SubscribeNumber + 1)
-                        setSubscribed(!Subscribed)
+                    if (response.data.success) {
+                        setSubscribeNumber(subscribeNumber - 1);
+                        setSubscribed(!subscribed);
                     } else {
-                        alert('Failed to subscribe')
+                        alert('구독 취소 하는데 실패하였습니다.')
+                    }
+                })
+        } else {
+            axios.post('/api/subscribe/subscribe', subscribedVariable)
+                .then(response => {
+                    if (response.data.success) {
+                        setSubscribeNumber(subscribeNumber + 1);
+                        setSubscribed(!subscribed);
+                    } else {
+                        alert('구독 하는데 실패하였습니다.')
                     }
                 })
         }
-
     }
 
     return (
         <>
             <button
-                onClick={onSubscribe}
                 style={{
-                    backgroundColor: `${Subscribed ? '#AAAAAA' : '#CC0000'}`,
+                    backgroundColor: `${subscribed ? '#999' : '#E03030'}`,
                     borderRadius: '4px',
                     color: '#fff',
                     padding: '10px 16px',
@@ -84,9 +78,9 @@ const Subscribe = (props) => {
                     outline: 'none',
                     cursor: 'pointer',
                 }}
-                
+                onClick={onSubscribe}
             >
-                {SubscribeNumber}, {Subscribed ? 'subscribed' : 'Subscribe'}
+                {subscribeNumber} {subscribed ? 'Subscribed' : 'Subscribe'}
             </button>
         </>
     );

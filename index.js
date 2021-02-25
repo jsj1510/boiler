@@ -216,28 +216,28 @@ app.post('/api/video/getVideoDetail', (req, res) => {
     })
 });
 
-// // 비디오페이지분류 이유 : 비디오페이지에서 구독정보 가져온다
-// app.post('/api/video/getSubscriptionVideos', (req, res) => {
-//   //자신의 아이디를 가지고 구독하는 사람들을 찾는다.
-//   Subscriber.find({ 'userFrom' : req.body.userFrom })
-//     .exec((err, subscriberInfo) => {
-//       if (err) return res.status(400).send(err);
+// 비디오페이지분류 이유 : 비디오페이지에서 구독정보 가져온다
+app.post('/api/video/getSubscriptionVideos', (req, res) => {
+  //자신의 아이디를 가지고 구독하는 사람들을 찾는다.
+  Subscriber.find({ 'userFrom' : req.body.userFrom })
+    .exec((err, subscriberInfo) => {
+      if (err) return res.status(400).send(err);
 
-//       let subscribedUser = [];
+      let subscribedUser = [];
 
-//       subscriberInfo.map((subscriber, i) => {
-//         subscribedUser.push(subscriber.userTo);
-//       })
+      subscriberInfo.map((subscriber, i) => {
+        subscribedUser.push(subscriber.userTo);
+      })
 
-//   //찾은 사람들의 비디오를 가지고온다.
-//       Video.find({ writer: { $in: subscribedUser }})
-//         .populate('writer')
-//         .exec((err, videos) => {
-//           if (err) return res.status(400).send(err);
-//           return res.status(200).json({ success: true, videos})
-//         })
-//     })
-// });
+  //찾은 사람들의 비디오를 가지고온다.
+      Video.find({ writer: { $in: subscribedUser }}) // $in 구독자 모든정보를 가져오기위해
+        .populate('writer')
+        .exec((err, videos) => {
+          if (err) return res.status(400).send(err);
+          return res.status(200).json({ success: true, videos})
+        })
+    })
+});
 
 //subscribe
 app.post('/api/subscribe/subscribeNumber', (req, res) => {
