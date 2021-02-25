@@ -3,7 +3,8 @@ import { List, Avatar, Row, Col } from 'antd';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import SideVideo from './Sections/SideVideo';
-import Subscriber from './Sections/Subscribe'
+import Subscriber from './Sections/Subscribe';
+import Comment from './Sections/Comment';
 
 function VideoDetailPage(props) {
     
@@ -27,11 +28,7 @@ function VideoDetailPage(props) {
 
     // 비디오.writer가 있으면 lmage
     if(videoDetail.writer) {
-        // const subscribedButton = videoDetail.writer._id !== localStorage.getItem('userID') 
-        //     && <Subscribe 
-        //             userTo= {videoDetail.writer._id} 
-        //             userFrom={localStorage.getItem('userID')}
-        //         />
+        const subscribeButton = videoDetail.writer._id !== localStorage.getItem('userId') && < Subscriber userTo={ videoDetail.writer._id } userFrom={ localStorage.getItem('userId') } />
         return (
             <Row gutter={[16, 16]}>
                     <Col lg={18} xs={24}>
@@ -39,7 +36,7 @@ function VideoDetailPage(props) {
                             <video style={{ width: '100%' }} src={`http://localhost:5000/${videoDetail.filePath}`} controls></video>
     
                             <List.Item
-                                actions={[<Subscriber userTo={videoDetail.writer._id} userFrom={localStorage.getItem('userId')} />]} >
+                                actions={[ subscribeButton ]} >
 
                                 <List.Item.Meta
                                     avatar={<Avatar src={videoDetail.writer.image}/>}
@@ -51,7 +48,7 @@ function VideoDetailPage(props) {
     
                             {/* 코멘트 */}
     
-                          
+                            <Comment />
     
                         </div>
                     </Col>
