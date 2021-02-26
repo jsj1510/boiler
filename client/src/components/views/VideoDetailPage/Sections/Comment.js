@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import SingleComment from './SingleComment'
+import SingleComment from './SingleComment';
+import ReplyComment from './ReplyComment';
 
 const Comment = ({ postId, commentList, refreshFunction }) => {
     const user = useSelector(state => state.user);
@@ -43,15 +44,20 @@ const Comment = ({ postId, commentList, refreshFunction }) => {
             {/* 코멘트리스트 */}
             {commentList && commentList.map((comment, index) => (
                 (!comment.responseTo &&
-                    <>
+                    <React.Fragment>
                         <SingleComment 
                             refreshFunction={refreshFunction}
                             key={index} 
                             comment={comment} 
                             postId={postId}
                         />
-                        
-                    </>
+                        <ReplyComment
+                            refreshFunction={refreshFunction}
+                            parentCommentId={comment.id}
+                            commentList={commentList}
+                            postId={postId}
+                        />
+                    </React.Fragment>
                 )
             ))}
             {/* 루트코멘트 폼 */}

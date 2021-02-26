@@ -1,7 +1,6 @@
-  
 import React, { useState } from 'react';
-import { Comment, Avatar} from 'antd';
-import { useSelector} from 'react-redux';
+import { Comment, Avatar } from 'antd';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 
@@ -33,6 +32,8 @@ const SingleComment = ({ comment, postId, refreshFunction }) => {
         .then(response => {
             if (response.data.success) {
                 console.log(response.data.result);
+                setcommentValue("");
+                setOpenReply(false);
                 refreshFunction(response.data.result);
             } else {
                 alert('커멘트를 저장하지 못했습니다.');
@@ -70,5 +71,4 @@ const SingleComment = ({ comment, postId, refreshFunction }) => {
         </div>
     );
 };
-
 export default SingleComment;
