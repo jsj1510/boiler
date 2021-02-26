@@ -13,6 +13,7 @@ function VideoDetailPage(props) {
         videoId : videoId,
     };
     const [videoDetail, setVideoDetail] = useState([]);
+    // const [Comment, setComment] = useState(initialState)
 
     useEffect(() => {
         axios.post('/api/video/getVideoDetail', variable)
@@ -23,7 +24,7 @@ function VideoDetailPage(props) {
                     alert('비디오 정보를 가져오는데 실패하였습니다.');
                 }
             });
-
+            console.log(Comment);
     }, [])
 
     // 비디오.writer가 있으면 lmage
@@ -48,7 +49,7 @@ function VideoDetailPage(props) {
     
                             {/* 코멘트 */}
     
-                            <Comment />
+                            <Comment postId={videoId} />
     
                         </div>
                     </Col>

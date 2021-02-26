@@ -6,10 +6,12 @@ const bodyParser = require('body-parser');
 const { User } = require('./models/User');
 const { Video } = require("./models/Video"); 
 const { Subscriber } = require("./models/Subscriber");
+const { Comment } = require("./models/Comment");
 const config = require('./config/key');
 const port = 5000;
 const multer = require('multer');// video파일저장
 const ffmpeg = require('fluent-ffmpeg');// 썸네일 생성
+
 
 // application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: true}));
@@ -278,3 +280,27 @@ app.post('/api/subscribe/unSubscribe', (req, res) => {
   })
 });
 
+// 댓글
+app.post('/api/comment/saveComment', (req, res) => {
+  const comment = new Comment(req.body)
+
+  comment.save(( err, comment ) => {
+    if (err) return res.json({ success: false, err});
+    Comment.find({ '_id': comment._id })
+      .populate('writer')
+      .exec((err, result) => {
+        if(err) return res.json({ success: false, err })
+        return res.status(200).json({ success: true, result });
+      })
+  })
+});
+
+app.post('/api/comment/getComments', (req, res) => {
+ 
+    Comment.find({ 'postId': req.body.videoId })
+      .populate('writer')
+      .exec((err, comments) => {
+        if(err) return res.status(400).send(err);
+        return res.status(200).json({ success: true, comments });
+      })
+});
